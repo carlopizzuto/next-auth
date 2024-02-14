@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { getUserById } from "@/data/user";
 import { db } from "./lib/db";
 import authConfig from "@/auth.config";
+import { string } from "zod";
 
 export const {
   handlers: { GET, POST },
@@ -17,14 +18,25 @@ export const {
     error: "/auth/error",
   },
   events: {
-    async linkAccount({ user}) {
+    async linkAccount({ user }) {
       await db.user.update({
-        where: {id: user.id},
-        data: {emailVerified: new Date()}
-      })
-    }
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
+    },
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+
+      const existingUser = await getUserById(user.id);
+
+      //TODO: Add 2FA check
+
+      if (!existingUser?.emailVerified) return false;
+
+      return true;
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
