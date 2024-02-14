@@ -1,27 +1,37 @@
-"use server"
+"use server";
 
-import bcrypt from "bcrypt";
-import * as z from 'zod';
+import * as z from "zod";
 
-import { db } from "@/lib/db";
-import { LoginSchema } from '@/schemas';
+import { signIn } from "@/auth";
+import { LoginSchema } from "@/schemas";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { AuthError } from "next-auth";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
-    const validateFields = LoginSchema.safeParse(values);
+  const validateFields = LoginSchema.safeParse(values);
 
-    if (!validateFields.success) {
-        return { error: "Invalid fields!"};
+  if (!validateFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { email, password } = validateFields.data;
+
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: DEFAULT_LOGIN_REDIRECT,
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "Invalid Credential!" };
+        default:
+          return { error: "Something went wrong!" };
+      }
     }
 
-    const {email, password} = validateFields.data;
-
-    const user = db.user.findUnique({
-        where: {
-            email,
-        }
-    });
-
-    const unhashedPassword = await bcrypt.compare(password, user.password);
-
-    return { success: "Email sent!" };
-}
+    throw error;
+  }
+};
