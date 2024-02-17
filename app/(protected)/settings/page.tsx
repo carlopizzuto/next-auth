@@ -1,22 +1,19 @@
-"use client"
+"use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { logout } from "@/actions/logout";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { LoginButton } from "@/components/auth/login-button";
 
-const SettingsPage = async () => {
-  const session = await useSession();
+const SettingsPage = () => {
+  const user = useCurrentUser();
 
   const onClick = () => {
-    signOut();
-  }
+    logout();
+  };
 
   return (
-    <div>
-      {JSON.stringify(session)}
-      <form>
-        <button type="submit">
-            Sign Out
-        </button>
-      </form>
+    <div className="bg-white p-10 rounded-xl">
+      settings
     </div>
   );
 };
