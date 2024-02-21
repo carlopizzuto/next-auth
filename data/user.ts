@@ -19,4 +19,3 @@ export const getUserById = async (id: string | undefined) => {
     return null;
   }
 };
-
