@@ -24,7 +24,7 @@ export default function Home() {
         </h1>
         <p className="text-slate-200 text-lg">A simple authentication service</p>
         <div className="inline-flex space-x-5"> 
-          <LoginButton asChild>
+          <LoginButton mode="modal" asChild>
             <Button variant="secondary" size="lg">
               Log in
             </Button>
