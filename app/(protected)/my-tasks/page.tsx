@@ -26,7 +26,7 @@ const MyTasksPage = () => {
   }, []); // Empty dependency array means this effect runs once on mount
 
   return (
-    <Card className="w-[600px]">
+    <Card >
       <CardHeader>
         <TaskPageHeader title="My Tasks"/>
       </CardHeader>
