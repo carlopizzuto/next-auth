@@ -45,6 +45,7 @@ model User {
   password              String?
   role                  UserRole               @default(USER)
   accounts              Account[]
+  tasks                 Task[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 }
@@ -77,10 +78,35 @@ model TwoFactorToken {
 }
 
 model TwoFactorConfirmation {
-  id String @id @default(cuid())
-
+  id     String @id @default(cuid())
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  subtasks    Subtasks[]
+  complete    Boolean    @default(false)
+  created_at  DateTime   @default(now())
+  due_at      DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subtasks {
+  id           String    @id @default(cuid())
+  parentTaskId String
+  name         String
+  description  String?
+  complete     Boolean   @default(false)
+  created_at   DateTime  @default(now())
+  due_at       DateTime?
+
+  parentTask Task @relation(fields: [parentTaskId], references: [id], onDelete: Cascade)
 }

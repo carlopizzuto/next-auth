@@ -36,6 +36,14 @@ export const NewPasswordSchema = z.object({
   }),
 });
 
+export const NewTaskSchema = z.object({
+  name: z.string().min(1, {
+    message: "Task name is required!",
+  }),
+  description: z.optional(z.string().min(15)),
+  dueDate: z.optional(z.date()),
+})
+
 export const ResetSchema = z.object({
   email: z.string().email({
     message: "Email is required",
